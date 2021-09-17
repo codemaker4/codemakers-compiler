@@ -3,7 +3,7 @@ let compiler;
 window.onload = () => {
     compiler = new Compiler(
         document.getElementsByClassName("input")[0],
-        document.getElementsByClassName("outputContainer")[0]
+        document.getElementById("binOut")
     );
 }
 
@@ -12,6 +12,7 @@ class Compiler {
         this.codeInput = codeInput;
         this.outputContainer = outputContainer;
         this.compiledMemory = [];
+        this.qrCode = undefined;
         this.instructionSet = new InstructionSet([
             new InstructionType("HLT",0,[]),
             new InstructionType("NOP",1,[]),
@@ -145,11 +146,20 @@ class Compiler {
 
         this.outputContainer.innerHTML = "";
         if (errors.length == 0) {
-            let qrCodeText = "";
+            let qrCodeText = "https://codemaker4.github.io/codemakers-compiler/binaryViewer/?";
             for (let i = 0; i < this.compiledMemory.length; i++) {
                 const compiledByte = this.compiledMemory[i];
                 this.outputContainer.innerHTML += compiledByte.byteBin + "<br>";
                 qrCodeText += compiledByte.byteBin
+                if (i+1 < this.compiledMemory.length) {
+                    qrCodeText += "-";
+                }
+            }
+            if (this.qrCode === undefined) {
+                this.qrCode = new QRCode(document.getElementById("qrcode"), qrCodeText);
+            } else {
+                this.qrCode.clear();
+                this.qrCode.makeCode(qrCodeText);
             }
         } else {
             for (let i = 0; i < errors.length; i++) {

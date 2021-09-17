@@ -15,7 +15,7 @@
         if (/[^01-]/g.test(bin)) { // if invalid char is found in data (possible script inserion attack)
             return;
         }
-        document.getElementById("binaryContent").innerHTML = bin.replace("-", "<br>");
+        document.getElementById("binaryContent").innerHTML = bin.replace(/-/g, "<br>");
     }
 </script>
 </html>

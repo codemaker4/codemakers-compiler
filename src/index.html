@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Hello World!</title>
     <link rel="stylesheet" href="index.css">
-    <script src="qrcodejs/qrcode.min.js"></script>
+    <script src="qrcodejs/qrcode.js"></script>
     <script src="compiler.js"></script>
   </head>
   <body>
@@ -29,7 +29,8 @@
       </div>
     </div>
     <div class="outputContainer">
-        press compile to compile your code
+        <div id="qrcode"></div>
+        <p id="binOut">press compile to compile your code</p>
     </div>
   </body>
 </html>
