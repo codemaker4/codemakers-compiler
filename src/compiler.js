@@ -54,10 +54,11 @@ class Compiler {
             new InstructionType("JMP",38,[]),
             new InstructionType("JMPC",39,[]),
             new InstructionType("JMPZ",40,[]),
-            new InstructionType("PSH",41,[]),
-            new InstructionType("POP",42,[]),
-            new InstructionType("SUB",43,[]),
-            new InstructionType("RET",44,[])
+            new InstructionType("JMPQ",41,[]),
+            new InstructionType("PSH",42,[]),
+            new InstructionType("POP",43,[]),
+            new InstructionType("SUBR",44,[]),
+            new InstructionType("RET",45,[])
         ]);
     }
     compileFull() {
@@ -156,7 +157,14 @@ class Compiler {
                 }
             }
             if (this.qrCode === undefined) {
-                this.qrCode = new QRCode(document.getElementById("qrcode"), qrCodeText);
+                this.qrCode =   new QRCode(document.getElementById("qrcode"), {
+                    text: qrCodeText,
+                    width: 512,
+                    height: 512,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
             } else {
                 this.qrCode.clear();
                 this.qrCode.makeCode(qrCodeText);
