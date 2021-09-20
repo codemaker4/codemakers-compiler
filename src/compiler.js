@@ -5,6 +5,9 @@ window.onload = () => {
         document.getElementsByClassName("input")[0],
         document.getElementById("binOut")
     );
+    document.getElementById("qrcode").onclick = () => {
+        document.getElementById("qrcode").style.display = "none";
+    }
 }
 
 class Compiler {
@@ -72,13 +75,13 @@ class Compiler {
 
         while (i < inputText.length) {
             let getLinePartsOutput = this.getLineParts(inputText, i);
-            console.log(getLinePartsOutput, i, line);
+            // console.log(getLinePartsOutput, i, line);
             i = getLinePartsOutput.i;
             let parts = getLinePartsOutput.parts;
             let error = getLinePartsOutput.error;
 
             if (error) {
-                console.log("parsed syntax error");
+                // console.log("parsed syntax error");
                 for (let j = 0; j < parts.length; j++) {
                     const part = parts[j];
                     if (part.type == "error") {
@@ -89,7 +92,7 @@ class Compiler {
                 continue;
             }
             if (parts.length == 0) {
-                console.log("parsed newline");
+                // console.log("parsed newline");
                 line ++;
                 continue;
             }
@@ -97,9 +100,9 @@ class Compiler {
             if (parts[0].type == "instruction") {
                 let checkInstructionResult = this.instructionSet.checkInstruction(parts)
                 if (!checkInstructionResult.error) {
-                    console.log("validated instruction", parts);
+                    // console.log("validated instruction", parts);
                 } else {
-                    console.log("instruction invalid", checkInstructionResult.errorList, i, line, parts);
+                    // console.log("instruction invalid", checkInstructionResult.errorList, i, line, parts);
                     for (let i = 0; i < checkInstructionResult.errorList.length; i++) {
                         const error = checkInstructionResult.errorList[i];
                         errors.push("Error on line " + line.toString() + ": " + error);
@@ -140,17 +143,17 @@ class Compiler {
             const compiledByte = this.compiledMemory[i];
             let compiledByteOut = compiledByte.compile(this.instructionSet, labels);
             if (compiledByteOut.error) {
-                console.log("error on line" + compiledByteOut.errorLine.toString() + ":" + compiledByteOut.errorText);
-                errors.push("error on line" + compiledByteOut.errorLine.toString() + ": " + compiledByteOut.errorText)
+                // console.log("error on line" + compiledByteOut.errorLine.toString() + ":" + compiledByteOut.errorText);
+                // errors.push("error on line" + compiledByteOut.errorLine.toString() + ": " + compiledByteOut.errorText);
             }
         }
 
-        this.outputContainer.innerHTML = "";
+        let outBin = ""
         if (errors.length == 0) {
             let qrCodeText = "https://codemaker4.github.io/codemakers-compiler/binaryViewer/?";
             for (let i = 0; i < this.compiledMemory.length; i++) {
                 const compiledByte = this.compiledMemory[i];
-                this.outputContainer.innerHTML += compiledByte.byteBin + "<br>";
+                outBin += compiledByte.byteBin + "<br>";
                 qrCodeText += compiledByte.byteBin
                 if (i+1 < this.compiledMemory.length) {
                     qrCodeText += "-";
@@ -159,22 +162,25 @@ class Compiler {
             if (this.qrCode === undefined) {
                 this.qrCode =   new QRCode(document.getElementById("qrcode"), {
                     text: qrCodeText,
-                    width: 512,
-                    height: 512,
+                    width: 180*5,
+                    height: 180*5,
                     colorDark : "#000000",
                     colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.H
+                    correctLevel : QRCode.CorrectLevel.L
                 });
             } else {
                 this.qrCode.clear();
                 this.qrCode.makeCode(qrCodeText);
             }
+            document.getElementById("qrcode").style.display = "block";
         } else {
             for (let i = 0; i < errors.length; i++) {
                 const error = errors[i];
-                this.outputContainer.innerHTML += error + "<br>";
+                outBin += error + "<br>";
             }
         }
+
+        this.outputContainer.innerHTML = outBin;
 
         console.log("compiling done");
     }
