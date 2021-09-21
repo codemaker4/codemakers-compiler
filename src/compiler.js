@@ -150,29 +150,10 @@ class Compiler {
 
         let outBin = ""
         if (errors.length == 0) {
-            let qrCodeText = "https://codemaker4.github.io/codemakers-compiler/binaryViewer/?";
             for (let i = 0; i < this.compiledMemory.length; i++) {
                 const compiledByte = this.compiledMemory[i];
                 outBin += compiledByte.byteBin + "<br>";
-                qrCodeText += compiledByte.byteBin
-                if (i+1 < this.compiledMemory.length) {
-                    qrCodeText += "-";
-                }
             }
-            if (this.qrCode === undefined) {
-                this.qrCode =   new QRCode(document.getElementById("qrcode"), {
-                    text: qrCodeText,
-                    width: 180*5,
-                    height: 180*5,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.L
-                });
-            } else {
-                this.qrCode.clear();
-                this.qrCode.makeCode(qrCodeText);
-            }
-            document.getElementById("qrcode").style.display = "block";
         } else {
             for (let i = 0; i < errors.length; i++) {
                 const error = errors[i];
@@ -183,6 +164,46 @@ class Compiler {
         this.outputContainer.innerHTML = outBin;
 
         console.log("compiling done");
+    }
+    startMakeQR() {
+        document.getElementById("makeQRbutton").innerText = "making QR code...";
+        setTimeout(() => {this.makeQR()},0);
+    }
+    makeQR() {
+        let qrCodeText = "https://codemaker4.github.io/codemakers-compiler/binaryViewer/?";
+        for (let i = 0; i < this.compiledMemory.length; i++) {
+            const compiledByte = this.compiledMemory[i];
+            if (compiledByte.type == "error") {
+                qrCodeText += "error";
+            } else {
+                qrCodeText += compiledByte.byteBin;
+            }
+            if (i+1 < this.compiledMemory.length) {
+                qrCodeText += "-";
+            }
+        }
+        try {
+            if (this.qrCode === undefined) {
+                document.getElementById("qrcode").innerHTML = "";
+                this.qrCode =   new QRCode(document.getElementById("qrcode"), {
+                    text: qrCodeText,
+                    width: 1024,
+                    height: 1024,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.L
+                });
+            } else {
+                this.qrCode.clear();
+                this.qrCode.makeCode(qrCodeText);
+            }
+        } catch (error) {
+            document.getElementById("qrcode").innerText = "There was an error creating the QR code.";
+            this.qrCode = undefined;
+        }
+
+        document.getElementById("qrcode").style.display = "block";
+        document.getElementById("makeQRbutton").innerText = "make QR code";
     }
     getLineParts(inputText, i) {
         let lineText = "";
