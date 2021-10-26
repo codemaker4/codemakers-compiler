@@ -131,6 +131,15 @@ class Compiler {
                         type:"addressL",
                         text:part.text
                     }, line));
+                } else if (part.type == "rawAddress") {
+                    this.compiledMemory.push(new CompiledByte({
+                        type:"byte",
+                        text:"$"+part.text.slice(1,3)
+                    }, line));
+                    this.compiledMemory.push(new CompiledByte({
+                        type:"byte",
+                        text:"$"+part.text.slice(3,5)
+                    }, line));
                 } else {
                     this.compiledMemory.push(new CompiledByte(part, line));
                 }
@@ -144,7 +153,7 @@ class Compiler {
             let compiledByteOut = compiledByte.compile(this.instructionSet, labels);
             if (compiledByteOut.error) {
                 // console.log("error on line" + compiledByteOut.errorLine.toString() + ":" + compiledByteOut.errorText);
-                // errors.push("error on line" + compiledByteOut.errorLine.toString() + ": " + compiledByteOut.errorText);
+                errors.push("error on line" + compiledByteOut.errorLine.toString() + ": " + compiledByteOut.errorText);
             }
         }
 
@@ -238,6 +247,8 @@ class Compiler {
                 type = "instruction";
             } else if (/^@[a-zA-Z_]+$/.test(rawPart)) {
                 type = "address";
+            } else if (/^\$[0-9a-fA-F]{4}$/.test(rawPart)) {
+                type = "rawAddress";
             } else if (/^:[a-zA-Z_]+$/.test(rawPart)) {
                 type = "label";
             } else if (/^[#$%][0-9a-fA-F]+$/.test(rawPart)) {
