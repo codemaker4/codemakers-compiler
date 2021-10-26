@@ -12,7 +12,7 @@
 <script>
     window.onload = () => {
         let bin = location.search.slice(1)
-        if (/[^01-]/g.test(bin)) { // if invalid char is found in data (possible script inserion attack)
+        if (/[^0-9a-zA-Z \-\$]/g.test(bin)) { // if invalid char is found in data (possible script inserion attack)
             return;
         }
         document.getElementById("binaryContent").innerHTML = bin.replace(/-/g, "<br>");
